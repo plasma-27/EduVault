@@ -1,0 +1,4 @@
+$argon2i$v=19$m=512,t=2,p=4,keyid=someKey$/72bFit2B74mqs2nv6hjEg$80oE6xtGlexBvfKxoympcYTsRtlL3j1EIVLycyLVi3Q
+108
+True
+255279231164 12

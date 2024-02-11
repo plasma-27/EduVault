@@ -27,7 +27,7 @@ def instituteInsert(uid,name,tan,email,phone,password):
     institute_data = (uid,name,tan,email,phone)
     cursor.execute(institute_query, institute_data)
     login_query = "INSERT INTO login (uid,`key`, hash) VALUES (%s, %s, %s)"
-    login_data = (uid, name, password)
+    login_data = (uid, "key", password)
     cursor.execute(login_query, login_data)
     
     mydb.commit()
@@ -38,24 +38,6 @@ def instituteInsert(uid,name,tan,email,phone,password):
     mb.showinfo("Success",successMessage)
 
 
-
-
-def saveinfo():
-    institute_name = e1.get()
-    institute_email = e2.get()
-    institute_phone = e3.get()
-    institute_tan = e4.get()
-    institute_password = e5.get()
-    
-    uidobj = uid(institute_tan,0)
-    generated_uid = uidobj.generate_unique_12_digit_number()
-    passFuncobj = passFunc("key",institute_password,institute_password)
-    boiledPass = passFuncobj.generateBoilpass()
-    
-    if not (checkInstitute(institute_tan)):
-        instituteInsert(generated_uid,institute_name,institute_tan,institute_email,institute_phone,institute_password)
-    else:
-        mb.showerror("Warning", f"The TAN number '{institute_tan}' is already registered")
     
 def instituteSignup():
     def saveinfo():
@@ -64,12 +46,12 @@ def instituteSignup():
         institute_phone = e3.get()
         institute_tan = e4.get()
         institute_password = e5.get()
-        
+
         uidobj = uid(institute_tan,0)
         generated_uid = uidobj.generate_unique_12_digit_number()
         passFuncobj = passFunc("key",institute_password,institute_password)
         boiledPass = passFuncobj.generateBoilpass()
-        
+
         if not (checkInstitute(institute_tan)):
             instituteInsert(generated_uid,institute_name,institute_tan,institute_email,institute_phone,institute_password)
         else:

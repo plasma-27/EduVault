@@ -1,3 +1,5 @@
+from password import *
+
 # from password import passFunc
 # from uidGenerator import uid
 # from dbConnection import *
@@ -6,17 +8,17 @@
 
 
 # ################## Password Functions ##################
-# key="someKey"
-# secret="veryVerySecret"
-# rawPassword="easyPeasyPassword"
-# newInstance = passFunc(key,secret,rawPassword)
-# boiled_pass = newInstance.generateBoilpass()
+key="someKey"
+secret="veryVerySecret"
+rawPassword="easyPeasyPassword"
+newInstance = passFunc(key,secret,rawPassword)
+boiled_pass = newInstance.generateBoilpass()
 
-# print(boiled_pass)
-# print(len(boiled_pass))
+print(boiled_pass)
+print(len(boiled_pass))
 
-# verified = newInstance.passVerify(rawPassword,boiled_pass)
-# print(verified)
+verified = newInstance.passVerify(rawPassword,boiled_pass)
+print(verified)
 
 # ###########################################################
 

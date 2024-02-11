@@ -35,7 +35,7 @@ def studentInsert(uid,full_name, email, dob_value, gender, contact_no, aadhaar_n
     # Insert data into the login table
     login_query = "INSERT INTO login (uid,`key`, hash) VALUES (%s, %s, %s)"
     # For simplicity, assuming 'key' is the username and 'hash' is the password hash
-    login_data = (uid, full_name, password)  # Replace 'password_hash' with the actual hashed password
+    login_data = (uid, "key", password)  # Replace 'password_hash' with the actual hashed password
     cursor.execute(login_query, login_data)
     
      # Commit changes and close the connection

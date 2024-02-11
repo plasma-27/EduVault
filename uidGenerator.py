@@ -1,9 +1,10 @@
 import hashlib
 
 class uid:
-    def __init__(self,unique_12_digit_number):
+    def __init__(self,unique_12_digit_number,who):
         self.unique_12_digit_number=unique_12_digit_number
-
+        self.who=who  #1 for Student 
+                      #0 for institute
     
     def generate_unique_12_digit_number(self):
         # Convert the input number to bytes
@@ -20,6 +21,13 @@ class uid:
 
         # Ensure the generated number is 12 digits long
         unique_12_digit_number = str(hash_integer % (10 ** 12)).zfill(12)
+
+        if self.who == 1:
+            unique_12_digit_number = "S" + unique_12_digit_number
+        elif self.who == 0:
+            unique_12_digit_number = "I" + unique_12_digit_number
+        else:
+            raise ValueError("Invalid 'who' value. It should be either 0 or 1.")
 
         return unique_12_digit_number
 

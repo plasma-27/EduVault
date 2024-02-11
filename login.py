@@ -1,7 +1,39 @@
 from tkinter import *
 from signup_student import studentSignup
 from signup_institute import instituteSignup
+from tkinter import messagebox
+from dbConnection import *
+from password import *
+from postLogin import *
 
+def submit():
+    username = Login_emailName_entry.get()
+    password = Login_passwordName_entry.get()
+    
+    if not username or not password:
+        messagebox.showerror("Error", "Please enter both username and password.")
+        return
+    
+    dbobj = db()
+    mydb,cursor = dbobj.dbconnect("credentials")
+    
+    query_boiledPass = "SELECT hash from login WHERE uid=%s"
+    query_uid=username
+    cursor.execute(query_boiledPass, (query_uid,))
+    resultTuple = cursor.fetchone()
+    raw_boiledhash = resultTuple[0]
+   
+    
+    passFuncobj = passFunc("key",password,password)
+    access_grant = passFuncobj.passVerify(password,raw_boiledhash)
+    if access_grant:
+        window.destroy()  # Close the login window
+        display_hello(username)
+    else:
+        messagebox.showerror("Access Denied","Invalid Username or Password")
+            
+    # print(access_grant)
+    # messagebox.showinfo("Success",access_grant)
 
 window = Tk()
 window.title("EduVault : Academic Records Management")  # Set the title of the window
@@ -169,12 +201,35 @@ Login_button_1 = Button(
     image=Login_button_image_1,
     borderwidth=0,
     highlightthickness=0,
-    # command=lambda:,
+    
     relief="flat",
     activebackground="#272A37",
     cursor="hand2",
+    command=submit
 )
 Login_button_1.place(x=120, y=445, width=333, height=65)
 
 window.resizable(False, False)
 window.mainloop()
+
+
+
+
+
+
+# def display_hello():
+#     # Create the main window
+#     window = Tk()
+#     window.title("Greetings")
+#     window.geometry("400x200")
+#     window.configure(bg="#FFFFFF")
+
+#     # Create a label for the greeting
+#     greeting_label = Label(window, text="Hello!", font=("Helvetica", 24), fg="#206DB4", bg="#FFFFFF")
+#     greeting_label.pack(pady=20)
+
+#     # Run the Tkinter event loop
+#     window.mainloop()
+
+# # Call the function to display the greeting
+# display_hello()

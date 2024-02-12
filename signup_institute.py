@@ -53,7 +53,7 @@ def instituteSignup():
         boiledPass = passFuncobj.generateBoilpass()
 
         if not (checkInstitute(institute_tan)):
-            instituteInsert(generated_uid,institute_name,institute_tan,institute_email,institute_phone,institute_password)
+            instituteInsert(generated_uid,institute_name,institute_tan,institute_email,institute_phone,boiledPass)
         else:
             mb.showerror("Warning", f"The TAN number '{institute_tan}' is already registered")
     

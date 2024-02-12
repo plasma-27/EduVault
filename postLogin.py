@@ -4,9 +4,15 @@ from dbConnection import *
 
 def display_hello(uid):
     
+    if (uid[0]=="S"):
+        query_name = "SELECT name from student WHERE uid=%s"
+    if (uid[0]=="I"):
+        query_name = "SELECT name from institute WHERE uid=%s"
+    if (uid[0]=="A"):
+        query_name = "SELECT name from admin WHERE uid=%s"    
     dbobj = db()
     mydb,cursor = dbobj.dbconnect("credentials")
-    query_name = "SELECT name from student WHERE uid=%s"
+    # query_name = "SELECT name from student WHERE uid=%s"
     query_value = uid
     cursor.execute(query_name, (query_value,))
     result = cursor.fetchone()

@@ -100,13 +100,14 @@ switchSignup = Button(
     fg="#206DB4",
     font=("yu gothic ui Bold", 15 * -1),
     bg="black",
-    bd=0,
+    bd=0,   
     cursor="hand2",
     activebackground="#272A37",
     activeforeground="#ffffff",
     command=studentSignup
 )
 switchSignup.place(x=220, y=185, width=150, height=35)
+
 
 
 

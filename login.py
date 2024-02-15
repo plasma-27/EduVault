@@ -5,6 +5,9 @@ from tkinter import messagebox
 from dbConnection import *
 from password import *
 from postLogin import *
+from lastlogin import *
+
+
 
 def submit():
     username = Login_emailName_entry.get()
@@ -27,6 +30,7 @@ def submit():
     passFuncobj = passFunc("key",password,password)
     access_grant = passFuncobj.passVerify(password,raw_boiledhash)
     if access_grant:
+        update_last_login(username)
         window.destroy()  # Close the login window
         display_hello(username)
     else:

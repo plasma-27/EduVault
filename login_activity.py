@@ -1,6 +1,7 @@
 from dbConnection import *
 from datetime import datetime
-
+import tkinter as tk
+from tkinter import ttk
 
 def update_last_login(uid):
     try:
@@ -38,9 +39,31 @@ def get_last_login(uid):
         print("Error retrieving last login:", error)
 
 
+def fetch_login_data(uid):
+    try:
+        dbobj = db()
+        mydb, cursor = dbobj.dbconnect("credentials")
+        select_query = "SELECT lastlogin FROM last_login WHERE uid = %s ORDER BY lastlogin DESC"
+        cursor.execute(select_query, (uid,))
+        results = cursor.fetchall()
+        dbobj.dbclose(mydb, cursor)
+        return results
+    except mysql.connector.Error as error:
+        print("Error fetching login data:", error)
+        return []
 
+def display_login_data(uid):
+    login_data = fetch_login_data(uid)
 
+    root = tk.Tk()
+    root.title("Login Data")
 
+    for login_time in login_data:
+        login_label = tk.Label(root, text=login_time[0].strftime("%Y-%m-%d %H:%M:%S"))
+        login_label.pack()
+
+    root.mainloop()
+    
 # Example usage
 # uid = "S477729132063"
 
@@ -54,3 +77,5 @@ def get_last_login(uid):
 
 # last_login_time = get_last_login(uid)
 # print(last_login_time)
+# 
+# display_login_data(uid)

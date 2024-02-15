@@ -1,6 +1,6 @@
 from tkinter import *
 from dbConnection import *
-from lastlogin import get_last_login
+from login_activity import get_last_login
 from datetime import datetime
 
 

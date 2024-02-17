@@ -1,4 +1,4 @@
-import mysql.connector
+
 from mysql.connector import Error
 import mimetypes
 import subprocess
@@ -50,25 +50,38 @@ class Document:
         except Error as e:
             print(f"Error storing file in database: {e}")
 
-    def retrieve_file_from_database(self,file_id):
-        """Retrieve a file from the MySQL database."""
-        try:
-            dbobj = db()
-            mydb, cursor = dbobj.dbconnect("documents")
+    # def retrieve_file_from_database(self,file_id):
+    #     """Retrieve a file from the MySQL database."""
+    #     try:
+    #         dbobj = db()
+    #         mydb, cursor = dbobj.dbconnect("documents")
 
-            select_query = "SELECT file_name, file_data,key FROM files WHERE file_id = %s"
-            cursor.execute(select_query, (file_id,))
-            row = cursor.fetchone()
-            mydb.close()
-            if row:
-                filename, file_data = row
-                return filename, file_data
-            else:
-                print("File not found in database")
-                return None, None
-        except Error as e:
-            print(f"Error retrieving file from database: {e}")
-            return None, None
+    #         select_query = "SELECT file_name, file_data,`key` FROM files WHERE file_id = %s"
+    #         cursor.execute(select_query, (file_id,))
+    #         row = cursor.fetchone()
+    #         mydb.close()
+    #         if row:
+    #             filename, file_data = row
+    #             return filename, file_data
+    #         else:
+    #             print("File not found in database")
+    #             return None, None
+    #     except Error as e:
+    #         print(f"Error retrieving file from database: {e}")
+    #         return None, None
+    
+    def open_file_with_default_program(self, file_content, file_type):
+        """Open the file with the default program based on its type."""
+        try:
+            with tempfile.NamedTemporaryFile(suffix='.' + file_type.split('/')[1], delete=False) as temp_file:
+                temp_file.write(file_content)
+                temp_file.flush()
+                if os.name == 'posix':  # Check if the OS is Linux or macOS
+                    subprocess.Popen(["xdg-open", temp_file.name])  # For Linux
+                elif os.name == 'nt':  # Check if the OS is Windows
+                    subprocess.Popen(["start", temp_file.name], shell=True)  # For Windows
+        except Exception as e:
+            print(f"Error opening file: {e}")
 
     def determine_file_type(self,filename):
         """Determine the file type based on the filename."""
@@ -107,49 +120,87 @@ class Document:
         except Exception as e:
             print(f"Error: {e}")
 
-    def retrieve(self,file_id):
+    
+
+    # def retrieve(self, file_id):
+    #     dbobj = db()
+    #     mydb, cursor = dbobj.dbconnect("documents")
+    #     select_query = "SELECT file_name, file_data, `key` FROM files WHERE file_id = %s"
+    #     cursor.execute(select_query, (file_id,))
+    #     row = cursor.fetchone()
+    #     mydb.close()
+
+    #     if row:
+    #         filename, file_data, key = row
+    #         try:
+    #             # Specify the directory to store the encrypted and decrypted files
+    #             upload_buffer_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "uploadBuffer")
+                
+    #             # Write the encrypted file to the specified directory
+    #             encrypted_filename = os.path.join(upload_buffer_dir, filename)
+    #             with open(encrypted_filename, "wb") as encrypted_file:
+    #                 encrypted_file.write(file_data)
+                
+    #             # Decrypt the encrypted file
+    #             decrypted_filename = os.path.join(upload_buffer_dir, "decrypted_" + filename[:-4])
+    #             pyAesCrypt.decryptFile(encrypted_filename, decrypted_filename, key)
+    #             print("File decrypted:", decrypted_filename)  # Print for debugging
+                
+    #             # Determine the file type
+    #             file_type = self.determine_file_type(decrypted_filename)
+                
+    #             # Read the decrypted file data
+    #             with open(decrypted_filename, "rb") as decrypted_file:
+    #                 decrypted_file_data = decrypted_file.read()
+                
+    #             # Open the decrypted file with the default application
+    #             self.open_file_with_default_program(decrypted_file_data, file_type)
+    #         except Exception as e:
+    #             print(f"Error decrypting file: {e}")
+    #     else:
+    #         print("File not found in database")
+
+
+
+    def retrieve(self, file_id):
         dbobj = db()
-        mydb,cursor = dbobj.dbconnect("credentials")
-        select_query = "select hash from login where uid = %s"
-        cursor.execute(select_query,(self.uid,))
-        password = cursor.fetchone()
-        try:
-            file_id = int(file_id)
-            filename, file_data = self.retrieve_file_from_database(file_id)
-            if file_data:
-                decrypted_filename = "decrypted_" + filename[:-4]  # Remove ".aes" extension
-                pyAesCrypt.decryptFile(filename, decrypted_filename, password)
-                print("File decrypted:", decrypted_filename)  # Print for debugging
-                self.open_file_with_default_program(file_data, self.determine_file_type(decrypted_filename))
-        except ValueError:
-            print("Invalid file ID.")
-        except Exception as e:
-            print(f"Error: {e}")
+        mydb, cursor = dbobj.dbconnect("documents")
+        select_query = "SELECT file_name, file_data, `key` FROM files WHERE file_id = %s"
+        cursor.execute(select_query, (file_id,))
+        row = cursor.fetchone()
+        mydb.close()
 
-    # Define the rest of the functions (open_file_with_default_program, mainloop) as they are
+        if row:
+            filename, file_data, key = row
+            try:
+                # # Specify the directory to store the encrypted and decrypted files
+                # upload_buffer_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "uploadBuffer")
+                
+                # # Write the encrypted file to the specified directory
+                # encrypted_filename = os.path.join(upload_buffer_dir, filename)
+                # with open(encrypted_filename, "wb") as encrypted_file:
+                #     encrypted_file.write(file_data)
+                
+                # # Decrypt the encrypted file
+                # decrypted_filename = os.path.join(upload_buffer_dir, "decrypted_" + filename[:-4])
+                # pyAesCrypt.decryptFile(encrypted_filename, decrypted_filename, key)
+                # print("File decrypted:", decrypted_filename)  # Print for debugging
+                
+                # Determine the file type
+                # file_type = self.determine_file_type(decrypted_filename)
+                
+                decrypted_filename, file_type = fileCrypt.decrypt(filename,file_data,key)
+                # Read the decrypted file data
+                with open(decrypted_filename, "rb") as decrypted_file:
+                    decrypted_file_data = decrypted_file.read()
+                
+                # Open the decrypted file with the default application
+                self.open_file_with_default_program(decrypted_file_data, file_type)
+            except Exception as e:
+                print(f"Error decrypting file: {e}")
+        else:
+            print("File not found in database")
 
 
-# root = tk.Tk()
-# root.title("File Storage App")
 
-# # Create and place widgets
-# upload_button = tk.Button(root, text="Upload File", command=upload_file)
-# upload_button.pack(pady=10)
 
-# retrieve_frame = tk.Frame(root)
-# retrieve_frame.pack(pady=10)
-
-# file_id_label = tk.Label(retrieve_frame, text="File ID:")
-# file_id_label.grid(row=0, column=0)
-
-# file_id_entry = tk.Entry(retrieve_frame)
-# file_id_entry.grid(row=0, column=1)
-
-# retrieve_button = tk.Button(retrieve_frame, text="Retrieve File", command=retrieve_file)
-# retrieve_button.grid(row=0, column=2, padx=10)
-
-# status_label = tk.Label(root, text="")
-# status_label.pack(pady=10)
-
-# # Run the application
-# root.mainloop()

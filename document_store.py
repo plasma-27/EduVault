@@ -9,7 +9,7 @@ import pyAesCrypt
 import tkinter as tk
 from tkinter import filedialog
 import os
-from encrypt_file import *
+from encrypt_decrypt import *
 # password = "please-use-a-long-and-random-password"
 
 class Document:
@@ -50,25 +50,6 @@ class Document:
         except Error as e:
             print(f"Error storing file in database: {e}")
 
-    # def retrieve_file_from_database(self,file_id):
-    #     """Retrieve a file from the MySQL database."""
-    #     try:
-    #         dbobj = db()
-    #         mydb, cursor = dbobj.dbconnect("documents")
-
-    #         select_query = "SELECT file_name, file_data,`key` FROM files WHERE file_id = %s"
-    #         cursor.execute(select_query, (file_id,))
-    #         row = cursor.fetchone()
-    #         mydb.close()
-    #         if row:
-    #             filename, file_data = row
-    #             return filename, file_data
-    #         else:
-    #             print("File not found in database")
-    #             return None, None
-    #     except Error as e:
-    #         print(f"Error retrieving file from database: {e}")
-    #         return None, None
     
     def open_file_with_default_program(self, file_content, file_type):
         """Open the file with the default program based on its type."""
@@ -121,45 +102,6 @@ class Document:
             print(f"Error: {e}")
 
     
-
-    # def retrieve(self, file_id):
-    #     dbobj = db()
-    #     mydb, cursor = dbobj.dbconnect("documents")
-    #     select_query = "SELECT file_name, file_data, `key` FROM files WHERE file_id = %s"
-    #     cursor.execute(select_query, (file_id,))
-    #     row = cursor.fetchone()
-    #     mydb.close()
-
-    #     if row:
-    #         filename, file_data, key = row
-    #         try:
-    #             # Specify the directory to store the encrypted and decrypted files
-    #             upload_buffer_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "uploadBuffer")
-                
-    #             # Write the encrypted file to the specified directory
-    #             encrypted_filename = os.path.join(upload_buffer_dir, filename)
-    #             with open(encrypted_filename, "wb") as encrypted_file:
-    #                 encrypted_file.write(file_data)
-                
-    #             # Decrypt the encrypted file
-    #             decrypted_filename = os.path.join(upload_buffer_dir, "decrypted_" + filename[:-4])
-    #             pyAesCrypt.decryptFile(encrypted_filename, decrypted_filename, key)
-    #             print("File decrypted:", decrypted_filename)  # Print for debugging
-                
-    #             # Determine the file type
-    #             file_type = self.determine_file_type(decrypted_filename)
-                
-    #             # Read the decrypted file data
-    #             with open(decrypted_filename, "rb") as decrypted_file:
-    #                 decrypted_file_data = decrypted_file.read()
-                
-    #             # Open the decrypted file with the default application
-    #             self.open_file_with_default_program(decrypted_file_data, file_type)
-    #         except Exception as e:
-    #             print(f"Error decrypting file: {e}")
-    #     else:
-    #         print("File not found in database")
-
 
 
     def retrieve(self, file_id):

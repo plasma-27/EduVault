@@ -1,1 +1,2 @@
-12-02-2024 09:23:28 PM
+File encrypted: /home/quantum/vscode/eduVault/images/button_1.png.aes
+Error storing file in database: 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'key) VALUES ('/home/quantum/vscode/eduVault/images/button_1.png.aes', '?PNG\r\n\' at line 1

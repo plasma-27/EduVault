@@ -1,3 +1,5 @@
 *.aes
 .vscode/
 sensitive_credentials.py
+__pycache__/
+*.pyc

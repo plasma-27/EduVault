@@ -6,15 +6,34 @@ from dbConnection import *
 from password import *
 from postLogin import *
 from login_activity import *
+from otp import *
 
 
+def show_otp_dialog(username, window):
+    generated_otp = generate_otp()
 
+    otp = simpledialog.askstring("OTP Verification", f"Generated OTP: {generated_otp}\nPlease enter the OTP:")
+
+    if otp:
+        print("OTP entered:", otp)
+        if verify_otp(otp, generated_otp):
+            update_last_login(username)
+            window.destroy()  # Close the login window
+            display_hello(username)
+            print("OTP is correct.")
+        else:
+            print("Incorrect OTP.")
+    else:
+        print("OTP entry canceled.")
+        window.destroy()  # Close the main window
+        
 def submit():
     username = Login_emailName_entry.get()
     password = Login_passwordName_entry.get()
     
     if not username or not password:
         messagebox.showerror("Error", "Please enter both username and password.")
+        
         return
     
     dbobj = db()
@@ -28,16 +47,20 @@ def submit():
    
     
     passFuncobj = passFunc("key",password,password)
-    access_grant = passFuncobj.passVerify(password,raw_boiledhash)
-    if access_grant:
-        update_last_login(username)
-        window.destroy()  # Close the login window
-        display_hello(username)
+    isPasswordVerified = passFuncobj.passVerify(password,raw_boiledhash)
+    if isPasswordVerified:
+        # generated_otp = generate_otp()
+        # isOtpVerified = verifyOTP(entered_otp,generated_otp)
+        show_otp_dialog(username,window)
+    # if isOtpVerified:
+    #     update_last_login(username)
+    #     window.destroy()  # Close the login window
+    #     display_hello(username)
     else:
         messagebox.showerror("Access Denied","Invalid Username or Password")
             
-    # print(access_grant)
-    # messagebox.showinfo("Success",access_grant)
+    # print(isPasswordVerified)
+    # messagebox.showinfo("Success",isPasswordVerified)
 
 window = Tk()
 window.title("EduVault : Academic Records Management")  # Set the title of the window
@@ -221,20 +244,3 @@ window.mainloop()
 
 
 
-
-# def display_hello():
-#     # Create the main window
-#     window = Tk()
-#     window.title("Greetings")
-#     window.geometry("400x200")
-#     window.configure(bg="#FFFFFF")
-
-#     # Create a label for the greeting
-#     greeting_label = Label(window, text="Hello!", font=("Helvetica", 24), fg="#206DB4", bg="#FFFFFF")
-#     greeting_label.pack(pady=20)
-
-#     # Run the Tkinter event loop
-#     window.mainloop()
-
-# # Call the function to display the greeting
-# display_hello()

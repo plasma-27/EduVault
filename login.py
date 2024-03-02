@@ -7,55 +7,40 @@ from password import *
 from postLogin import *
 from login_activity import *
 from otp import *
+from tkinter import simpledialog
+from current_loggedIn_user import *
 
-
-# def show_otp_dialog(username, window):
-#     generated_otp = generate_otp()
-
-#     otp = simpledialog.askstring("OTP Verification", f"Generated OTP: {generated_otp}\nPlease enter the OTP:")
-
-#     if otp:
-#         print("OTP entered:", otp)
-#         if verify_otp(otp, generated_otp):
-#             update_last_login(username)
-#             window.destroy()  # Close the login window
-#             display_hello(username)
-#             print("OTP is correct.")
-#         else:
-#             print("Incorrect OTP.")
-#     else:
-#         print("OTP entry canceled.")
-#         window.destroy()  # Close the main window
-   
-def show_otp_dialog(username, window):
+  
+def show_otp_dialog(userid, window):
     generated_otp = generate_otp()
-
+    user_info = currentUserInfo(userid)
+    otp_send(generated_otp,user_info)
     while True:  # Keep asking for OTP until correct or user cancels
-        otp = simpledialog.askstring("OTP Verification", f"Generated OTP: {generated_otp}\nPlease enter the OTP:")
+        otp = simpledialog.askstring("OTP Verification", f"Please enter the OTP sent to your registered E-mail Id:")
 
         if otp is None:
-            print("OTP entry canceled.")
+            
             window.destroy()  # Close the main window
             return
 
-        print("OTP entered:", otp)
         if verify_otp(otp, generated_otp):
-            update_last_login(username)
+            update_last_login(userid)
             window.destroy()  # Close the login window
-            display_hello(username)
-            print("OTP is correct.")
+            display_hello(userid)
+            
             return
         else:
-            print("Incorrect OTP.")
+            
             messagebox.showerror("Incorrect OTP", "The entered OTP is incorrect. Please try again.")
    
         
 def submit():
-    username = Login_emailName_entry.get()
+    userid = Login_emailName_entry.get()
     password = Login_passwordName_entry.get()
     
-    if not username or not password:
-        messagebox.showerror("Error", "Please enter both username and password.")
+    
+    if not userid or not password:
+        messagebox.showerror("Error", "Please enter both userid and password.")
         
         return
     
@@ -63,7 +48,7 @@ def submit():
     mydb,cursor = dbobj.dbconnect("credentials")
     
     query_boiledPass = "SELECT hash from login WHERE uid=%s"
-    query_uid=username
+    query_uid=userid
     cursor.execute(query_boiledPass, (query_uid,))
     resultTuple = cursor.fetchone()
     raw_boiledhash = resultTuple[0]
@@ -72,18 +57,11 @@ def submit():
     passFuncobj = passFunc("key",password,password)
     isPasswordVerified = passFuncobj.passVerify(password,raw_boiledhash)
     if isPasswordVerified:
-        # generated_otp = generate_otp()
-        # isOtpVerified = verifyOTP(entered_otp,generated_otp)
-        show_otp_dialog(username,window)
-    # if isOtpVerified:
-    #     update_last_login(username)
-    #     window.destroy()  # Close the login window
-    #     display_hello(username)
+        show_otp_dialog(userid,window)
+  
     else:
-        messagebox.showerror("Access Denied","Invalid Username or Password")
+        messagebox.showerror("Access Denied","Invalid userid or Password")
             
-    # print(isPasswordVerified)
-    # messagebox.showinfo("Success",isPasswordVerified)
 
 window = Tk()
 window.title("EduVault : Academic Records Management")  # Set the title of the window
@@ -186,7 +164,7 @@ Login_emailName_image_Label.place(x=76, y=242)
 
 Login_emailName_text = Label(
     Login_emailName_image_Label,
-    text="Username",
+    text="UserID",
     fg="#FFFFFF",
     font=("yu gothic ui SemiBold", 13 * -1),
     bg="#3D404B"

@@ -1,6 +1,8 @@
 import random
 import tkinter as tk
-from tkinter import simpledialog
+from email_send import *
+from current_loggedIn_user import *
+
 
 def generate_otp():
     return random.randint(100000, 999999)
@@ -9,23 +11,13 @@ def verify_otp(entered_otp, generated_otp):
     entered_otp = int(entered_otp)  # Convert entered_otp to integer
     return entered_otp == generated_otp
 
-# def show_otp_dialog():
-#     root = tk.Tk()
-#     root.withdraw()  # Hide the main window
-
-#     generated_otp = generate_otp()
-
-#     otp = simpledialog.askstring("OTP Verification", f"Generated OTP: {generated_otp}\nPlease enter the OTP:", parent=root)
-
-#     if otp:
-#         print("OTP entered:", otp)
-#         if verify_otp(otp, generated_otp):
-#             print("OTP is correct.")
-#             # Process the OTP here
-#         else:
-#             print("Incorrect OTP.")
-#     else:
-#         print("OTP entry canceled.")
-
-# # Example usage
-# show_otp_dialog()
+def otp_send(generated_otp,user_info):
+    
+    username = user_info.name.capitalize()
+    email = user_info.email
+    subject = "Signing in? Here's your OTP."
+    message = f"Hello {username}, Your OTP to log in to your account is {generated_otp}"
+    sendMail(email, subject, message)
+    
+    
+ 

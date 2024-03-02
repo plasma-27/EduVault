@@ -1,0 +1,3 @@
+*.aes
+.vscode/
+sensitive_credentials.py

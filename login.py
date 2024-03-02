@@ -9,23 +9,46 @@ from login_activity import *
 from otp import *
 
 
+# def show_otp_dialog(username, window):
+#     generated_otp = generate_otp()
+
+#     otp = simpledialog.askstring("OTP Verification", f"Generated OTP: {generated_otp}\nPlease enter the OTP:")
+
+#     if otp:
+#         print("OTP entered:", otp)
+#         if verify_otp(otp, generated_otp):
+#             update_last_login(username)
+#             window.destroy()  # Close the login window
+#             display_hello(username)
+#             print("OTP is correct.")
+#         else:
+#             print("Incorrect OTP.")
+#     else:
+#         print("OTP entry canceled.")
+#         window.destroy()  # Close the main window
+   
 def show_otp_dialog(username, window):
     generated_otp = generate_otp()
 
-    otp = simpledialog.askstring("OTP Verification", f"Generated OTP: {generated_otp}\nPlease enter the OTP:")
+    while True:  # Keep asking for OTP until correct or user cancels
+        otp = simpledialog.askstring("OTP Verification", f"Generated OTP: {generated_otp}\nPlease enter the OTP:")
 
-    if otp:
+        if otp is None:
+            print("OTP entry canceled.")
+            window.destroy()  # Close the main window
+            return
+
         print("OTP entered:", otp)
         if verify_otp(otp, generated_otp):
             update_last_login(username)
             window.destroy()  # Close the login window
             display_hello(username)
             print("OTP is correct.")
+            return
         else:
             print("Incorrect OTP.")
-    else:
-        print("OTP entry canceled.")
-        window.destroy()  # Close the main window
+            messagebox.showerror("Incorrect OTP", "The entered OTP is incorrect. Please try again.")
+   
         
 def submit():
     username = Login_emailName_entry.get()

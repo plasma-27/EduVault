@@ -14,7 +14,6 @@ def verify_otp(entered_otp, generated_otp):
 def otp_send(generated_otp,user_info):
     
     username = user_info.name.capitalize()
-    
     email = user_info.email
     subject = "Signing in? Here's your OTP."
     message = f"Hello {username}, Your OTP to log in to your account is {generated_otp}"

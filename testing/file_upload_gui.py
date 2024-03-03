@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import filedialog
 from functools import partial
 # from file_store_retrieve import store, retrieve
-from test import *
+from document_store import *
 
 
 def upload_file():

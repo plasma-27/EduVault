@@ -9,18 +9,14 @@ from login_activity import *
 from otp import *
 from tkinter import simpledialog
 from current_user_info import *
-from user_homepage import *
+
   
 def show_otp_dialog(userid, window):
-    if (userid[0]=="S"):
-        user_type = "S"
-    else:
-        user_type = "I"    
     generated_otp = generate_otp()
-    user_info = currentUserInfo(userid,user_type)
-    # otp_send(generated_otp,user_info)
+    user_info = currentUserInfo(userid)
+    otp_send(generated_otp,user_info)
     while True:  # Keep asking for OTP until correct or user cancels
-        otp = simpledialog.askstring("OTP Verification", f"Please enter the OTP {generated_otp} sent to your registered E-mail Id:")
+        otp = simpledialog.askstring("OTP Verification", f"Please enter the OTP sent to your registered E-mail Id:")
 
         if otp is None:
             
@@ -30,11 +26,11 @@ def show_otp_dialog(userid, window):
         if verify_otp(otp, generated_otp):
             update_last_login(userid)
             window.destroy()  # Close the login window
-            # display_hello(userid)
-            userMainWindow = userHomePage(user_info)
-            userMainWindow.run()
+            display_hello(userid)
+            
             return
-        else: 
+        else:
+            
             messagebox.showerror("Incorrect OTP", "The entered OTP is incorrect. Please try again.")
    
         
@@ -55,22 +51,18 @@ def submit():
     query_uid=userid
     cursor.execute(query_boiledPass, (query_uid,))
     resultTuple = cursor.fetchone()
-    if resultTuple is None:
-        # User does not exist
-        messagebox.showerror("Error", "User does not exist.")
-        return
-    else:
-        raw_boiledhash = resultTuple[0]
-        
-        passFuncobj = passFunc("key",password,password)
-        isPasswordVerified = passFuncobj.passVerify(password,raw_boiledhash)
+    raw_boiledhash = resultTuple[0]
+   
+    
+    passFuncobj = passFunc("key",password,password)
+    isPasswordVerified = passFuncobj.passVerify(password,raw_boiledhash)
     if isPasswordVerified:
         show_otp_dialog(userid,window)
   
     else:
         messagebox.showerror("Access Denied","Invalid userid or Password")
-    
-   
+            
+
 window = Tk()
 window.title("EduVault : Academic Records Management")  # Set the title of the window
 

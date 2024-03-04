@@ -3,3 +3,4 @@
 sensitive_credentials.py
 __pycache__/
 *.pyc
+test.py

@@ -5,12 +5,9 @@ import subprocess
 import tempfile
 import io
 from dbConnection import *
-import pyAesCrypt
-import tkinter as tk
-from tkinter import filedialog
 import os
 from encrypt_decrypt import *
-# password = "please-use-a-long-and-random-password"
+
 
 class Document:
     
@@ -36,17 +33,28 @@ class Document:
         
         
     
-    def store_file_in_database(self,original_filename,encrypted_filename, file_data,key):
+    def store_file_in_database(self,original_filename, file_type, file_name_to_store,file_category,file_size_in_bytes ,file_data,key):
         """Store a file in the MySQL database."""
+        file_category = file_category
+        file_size_in_bytes = file_size_in_bytes
+        file_type = file_type
         try:
             
-            file_type = self.determine_file_type(original_filename)
+            
             
             dbobj = db()
             mydb, cursor = dbobj.dbconnect("documents")
-            # insert_query = "INSERT INTO files (file_name, file_data,`key`) VALUES (%s, %s, %s)"
-            insert_query = "INSERT INTO files (uid, file_name, file_type, file_data, `key`) VALUES (%s, %s, %s, %s, %s)"
-            cursor.execute(insert_query, (self.uid, encrypted_filename, file_type, file_data, key))
+            # insert_query = "INSERT INTO files (uid, file_name, file_type, file_data, `key`, file_size, category) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+            # cursor.execute(insert_query, (self.uid, file_name_to_store, file_type, file_data, key, file_size_in_bytes, file_category))
+            params = (self.uid, file_name_to_store, file_type, file_data, key, file_size_in_bytes, file_category)
+            print("Parameters:", params)
+
+            insert_query = "INSERT INTO files (uid, file_name, file_type, file_data, `key`, file_size, category) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+            print("SQL Query:", insert_query)
+
+            cursor.execute(insert_query, params)
+
+
             # cursor.execute(insert_query, (filename, file_data,key))
             mydb.commit()
             mydb.close()
@@ -88,21 +96,27 @@ class Document:
 
 
     
-    def store(self, filename):
+    def store(self, rawFilename, file_name_to_store,file_category,file_size_in_bytes):
+        file_name_to_store = file_name_to_store
+        file_category = file_category
+        file_size_in_bytes = file_size_in_bytes
+        
+        file_type = self.determine_file_type(rawFilename)
         key = self.retrieveKey()
+        
 
         try:
             # Encrypt the file and get the encrypted filename
-            encrypted_filename = fileCrypt.encrypt(filename, key)
+            encrypted_filename = fileCrypt.encrypt(rawFilename, key)
 
             # Read the encrypted file data
             with open(encrypted_filename, "rb") as encrypted_file:
                 encrypted_file_data = encrypted_file.read()
 
             # Store the encrypted file data in the database
-            self.store_file_in_database(filename,os.path.basename(encrypted_filename), encrypted_file_data, key)
+            self.store_file_in_database(rawFilename, file_type, file_name_to_store,file_category,file_size_in_bytes,encrypted_file_data, key)
         except FileNotFoundError:
-            print(f"Error: File '{filename}' not found.")
+            print(f"Error: File '{rawFilename}' not found.")
         except Exception as e:
             print(f"Error: {e}")
 

@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox,simpledialog
-from file_upload_gui import upload_file,retrieve_file
-from document_store import *
-
+from file_operations_interface import retrieve_file
+from file_store_retrieve_db import *
+from doc_upload_selector import *
 
 class userHomePage:
     def __init__(self,user_info):
@@ -30,7 +30,10 @@ class userHomePage:
         print("Button clicked!")
         
     def upload_documents(self):
-        upload_file(self.uid) 
+        UploadDocumentsWindowobj = UploadDocumentsWindow(self.uid)
+        UploadDocumentsWindowobj.window.mainloop
+        
+        # upload_file(self.uid) 
         
      
     

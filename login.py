@@ -22,10 +22,10 @@ def show_otp_dialog(userid, window):
     while True:  # Keep asking for OTP until correct or user cancels
         otp = simpledialog.askstring("OTP Verification", f"Please enter the OTP {generated_otp} sent to your registered E-mail Id:")
 
-        if otp is None:
+        # if otp is None:
             
-            window.destroy()  # Close the main window
-            return
+        #     window.destroy()  # Close the main window
+        #     return
 
         if verify_otp(otp, generated_otp):
             update_last_login(userid)

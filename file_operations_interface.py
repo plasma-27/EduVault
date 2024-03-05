@@ -1,23 +1,53 @@
 import tkinter as tk
 from tkinter import filedialog
 from functools import partial
-# from file_store_retrieve import store, retrieve
 from file_store_retrieve_db import *
 import os
 
 
-def upload_file_selector(uid,file_name_to_store,file_category):
+# def upload_file_selector(uid,file_name_to_store,file_category):
     
+#     file_name_to_store = file_name_to_store
+#     file_category = file_category
+#     documentobj = Document(uid)
+#     rawFilename = filedialog.askopenfilename()
+#     print(rawFilename)
+#     if rawFilename:
+#         file_size_in_bytes = get_file_size(rawFilename)
+#         documentobj.store(rawFilename,file_name_to_store,file_category,file_size_in_bytes)
+#         print("File uploaded successfully.")
+#         # status_label.config(text="File uploaded successfully.")
+
+def upload_file_selector(uid, file_name_to_store, file_category):
     file_name_to_store = file_name_to_store
     file_category = file_category
     documentobj = Document(uid)
-    rawFilename = filedialog.askopenfilename()
-    print(rawFilename)
-    if rawFilename:
-        file_size_in_bytes = get_file_size(rawFilename)
-        documentobj.store(rawFilename,file_name_to_store,file_category,file_size_in_bytes)
-        print("File uploaded successfully.")
-        # status_label.config(text="File uploaded successfully.")
+
+    raw_filename = filedialog.askopenfilename()
+    print(raw_filename)
+
+    if raw_filename:
+        file_size_in_bytes = get_file_size(raw_filename)
+        
+        file_type = documentobj.determine_file_type(raw_filename)
+
+        # Allow uploading only if the file type is 'image' or 'pdf'
+        if file_type.startswith('image/') or file_type == 'application/pdf':
+            # documentobj.store(raw_filename, file_name_to_store, file_category, file_size_in_bytes)
+            if file_size_in_bytes < 1024 * 1024:  # Check if file size is below 1MB
+                documentobj.store(raw_filename, file_name_to_store, file_category, file_size_in_bytes)
+                print("File uploaded successfully.")
+            else:
+                print("Max size of document is 1 MB. File not uploaded.")
+            
+        else:
+            print("Invalid file type. Only image or pdf files are allowed.")
+        
+        # if file_size_in_bytes < 1024 * 1024:  # Check if file size is below 1MB
+        #     documentobj.store(raw_filename, file_name_to_store, file_category, file_size_in_bytes)
+        #     print("File uploaded successfully.")
+        # else:
+        #     print("Max size of document is 1 MB. File not uploaded.")
 
 
 def retrieve_file(uid,file_id):
@@ -46,6 +76,8 @@ def get_file_size(filename):
     except Exception as e:
         print(f"Error getting file size: {e}")
         return None
+ 
+ 
         
 
 # # Main application logic

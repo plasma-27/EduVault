@@ -47,10 +47,8 @@ class Document:
             # insert_query = "INSERT INTO files (uid, file_name, file_type, file_data, `key`, file_size, category) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
             # cursor.execute(insert_query, (self.uid, file_name_to_store, file_type, file_data, key, file_size_in_bytes, file_category))
             params = (self.uid, file_name_to_store, file_type, file_data, key, file_size_in_bytes, file_category)
-            print("Parameters:", params)
 
             insert_query = "INSERT INTO files (uid, file_name, file_type, file_data, `key`, file_size, category) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-            print("SQL Query:", insert_query)
 
             cursor.execute(insert_query, params)
 

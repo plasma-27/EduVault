@@ -3,13 +3,14 @@ from tkinter import messagebox,simpledialog
 from file_operations_interface import retrieve_file
 from file_store_retrieve_db import *
 from doc_upload_selector import *
+from fetch_documents_list import DocumentApp
 
 class userHomePage:
     def __init__(self,user_info):
         self.uid = user_info.uid
         self.root = tk.Tk()
         self.root.title("Welcome to EduVault")
-        self.root.geometry("400x300")
+        self.root.geometry("600x400")
 
         # Create buttons
         update_profile_btn = tk.Button(self.root, text="Update Profile", command=self.dummy_function)
@@ -39,14 +40,9 @@ class userHomePage:
     
     def view_documents(self):
         # Function to view documents
-        file_id = simpledialog.askinteger("View Documents", "Enter File ID:")
-        if file_id is not None:
-            # You can perform actions based on the entered file_id
-            print(f"Viewing document with File ID: {file_id}")
-            retrieve_file(self.uid,file_id) 
-        else:
-            messagebox.showinfo("Info", "Please enter a valid File ID.")
-    
+        document_app = DocumentApp(self.root, self.uid)
+        document_app.fetch_documents()  # Fetch documents initially
+        document_app.run()    
            
 
     def on_close(self):

@@ -169,6 +169,9 @@ class DocumentApp:
         self.file_details = []  # Store file details in a list
 
         self.create_gui()
+        
+        fetch_button = tk.Button(self.root, text="Fetch Documents", command=self.fetch_documents)
+        fetch_button.pack(pady=10)
 
     def create_gui(self):
         self.tree = ttk.Treeview(self.root)
@@ -195,6 +198,9 @@ class DocumentApp:
         fetch_button = tk.Button(self.root, text="Fetch Documents", command=self.fetch_documents)
         fetch_button.pack(pady=10)
 
+    def run(self):
+        self.root.mainloop()
+
     def fetch_documents(self):
         # Clear existing items in the treeview and reset the file_details list
         for item in self.tree.get_children():
@@ -211,16 +217,19 @@ class DocumentApp:
             cursor.execute(query, (self.uid,))
             documents = cursor.fetchall()
 
-            # Populate the treeview with fetched documents
-            for document in documents:
-                file_id, file_name, file_type, category, file_size = document
+            if not documents:
+                print("No documents found for the user.")
+            else:
+                # Populate the treeview with fetched documents
+                for document in documents:
+                    file_id, file_name, file_type, category, file_size = document
 
-                # Append file details to the list
-                self.file_details.append((file_id, file_name, file_type, category, file_size))
+                    # Append file details to the list
+                    self.file_details.append((file_id, file_name, file_type, category, file_size))
 
-                # Inserting values into the treeview
-                self.tree.insert("", "end", values=(file_id, file_name, file_type, category, file_size, ""))
-                # print(self.file_details)
+                    # Inserting values into the treeview
+                    self.tree.insert("", "end", values=(file_id, file_name, file_type, category, file_size, ""))
+                    print(f"Fetched document: {file_id}, {file_name}, {file_type}, {category}, {file_size}")
 
         finally:
             # Always close the database connection and cursor
@@ -229,12 +238,10 @@ class DocumentApp:
             if cursor:
                 cursor.close()
 
-    def run(self):
-        self.root.mainloop()
 
 if __name__ == "__main__":
     # Replace 'your_uid' with the actual user ID
-    user_id = 'your_uid'
+    user_id = 'S692005561648'
     
     # Create and run the application
     root = tk.Tk()

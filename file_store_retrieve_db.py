@@ -7,6 +7,8 @@ import io
 from dbConnection import *
 import os
 from encrypt_decrypt import *
+from storage_quota import *
+from current_user_info import *
 
 
 class Document:
@@ -58,20 +60,25 @@ class Document:
             mydb.close()
 
             print("File stored in database successfully")
+            storageobj = StorageQuota(self.uid)
+            storageobj.storage_quota_decrement(file_size_in_bytes)  # decrement storage quota after upload
         except Error as e:
             print(f"Error storing file in database: {e}")
 
     
-    def open_file_with_default_program(self, file_content, file_type):
+    
+    
+    def open_file_with_default_program(self, file_content, file_type, file_name):
         """Open the file with the default program based on its type."""
         try:
-            with tempfile.NamedTemporaryFile(suffix='.' + file_type.split('/')[1], delete=False) as temp_file:
-                temp_file.write(file_content)
-                temp_file.flush()
-                if os.name == 'posix':  # Check if the OS is Linux or macOS
-                    subprocess.Popen(["xdg-open", temp_file.name])  # For Linux
-                elif os.name == 'nt':  # Check if the OS is Windows
-                    subprocess.Popen(["start", temp_file.name], shell=True)  # For Windows
+            with open(file_name, 'wb') as file:
+                file.write(file_content)
+
+            if os.name == 'posix':  # Check if the OS is Linux or macOS
+                subprocess.Popen(["xdg-open", file_name])  # For Linux
+            elif os.name == 'nt':  # Check if the OS is Windows
+                subprocess.Popen(["start", file_name], shell=True)  # For Windows
+
         except Exception as e:
             print(f"Error opening file: {e}")
 
@@ -80,17 +87,7 @@ class Document:
         file_type, _ = mimetypes.guess_type(filename)
         return file_type
 
-    def open_file_with_default_program(self,file_data, file_type):
-        """Open the file with the default program based on its type."""
-        try:
-            with tempfile.NamedTemporaryFile(suffix='.' + file_type.split('/')[1], delete=False) as temp_file:
-                temp_file.write(file_data)
-                temp_file.flush()
-                subprocess.Popen(["xdg-open", temp_file.name])  # For Linux
-                # subprocess.Popen(["open", temp_file.name])  # For macOS
-                # subprocess.Popen(["start", temp_file.name], shell=True)  # For Windows
-        except Exception as e:
-            print(f"Error opening file: {e}")
+ 
 
 
     
@@ -139,12 +136,51 @@ class Document:
                     decrypted_file_data = decrypted_file.read()
                 
                 # Open the decrypted file with the default application
-                self.open_file_with_default_program(decrypted_file_data, file_type)
+                self.open_file_with_default_program(decrypted_file_data, file_type,filename)
             except Exception as e:
                 print(f"Error decrypting file: {e}")
         else:
             print("File not found in database")
 
 
+    def delete(self, file_id):
+        dbobj = db()
+        mydb, cursor = dbobj.dbconnect("documents")
+    
+        try:
+            # Check if the file exists
+            check_query = "SELECT * FROM files WHERE file_id = %s"
+            cursor.execute(check_query, (file_id,))
+            existing_file = cursor.fetchone()
+    
+            if existing_file:
+                # Get file size before deleting
+                self.file_size = existing_file[6]
+    
+                
+                # Delete entries from file_access for the specified file_id
+                delete_access_query = "DELETE FROM file_access WHERE file_id = %s"
+                cursor.execute(delete_access_query, (file_id,))
+                mydb.commit()
+                print(f"File access entries for ID {file_id} deleted successfully.")
 
+                # Delete the file entry from the files table
+                delete_query = "DELETE FROM files WHERE file_id = %s"
+                cursor.execute(delete_query, (file_id,))
+                mydb.commit()
+                print(f"File with ID {file_id} deleted successfully.")
+    
 
+                # Decrement storage quota
+                storageobj = StorageQuota(self.uid)
+                storageobj.storage_quota_decrement(self.file_size)
+            else:
+                print(f"File with ID {file_id} not found.")
+    
+        finally:
+            # Always close the database connection and cursor
+            if mydb:
+                mydb.close()
+            if cursor:
+                cursor.close()
+    

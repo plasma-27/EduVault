@@ -1,5 +1,5 @@
 from dbConnection import *
-
+from email_send import *
 class Admin:
     
     @staticmethod
@@ -74,17 +74,31 @@ class Admin:
     
     @staticmethod
     def grant_approval(iuid):
+        email = None
+        name = None
+
         try:
             dbobj = db()
             mydb, cursor = dbobj.dbconnect("credentials")
 
-            # Update the verified column to 1 for the specified iuid
-            update_query = "UPDATE institute SET verified = 1 WHERE uid = %s"
-            cursor.execute(update_query, (iuid,))
+            # Fetch email and name before updating the verified column
+            select_query = "SELECT email, name FROM institute WHERE uid = %s"
+            cursor.execute(select_query, (iuid,))
+            result = cursor.fetchone()
 
-            # Commit the changes to the database
-            mydb.commit()
-            print(f"Approval granted for institute with UID: {iuid}")
+            if result:
+                institute_email, name = result
+                subject = "Registration Approved"
+                email_message = f"hello {name}, Your registration as an Institute is Aproved"
+
+                # Update the verified column to 1 for the specified iuid
+                update_query = "UPDATE institute SET verified = 1 WHERE uid = %s"
+                cursor.execute(update_query, (iuid,))
+
+                # Commit the changes to the database
+                mydb.commit()
+                print(f"Approval granted for institute with UID: {iuid}")
+                sendMail(institute_email,subject,email_message)
 
         except Exception as e:
             print(f"Error granting approval: {e}")
@@ -92,6 +106,7 @@ class Admin:
             # Close the database connection
             if mydb:
                 mydb.close()
+        
                 
                 
     @staticmethod

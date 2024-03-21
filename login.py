@@ -14,31 +14,64 @@ from user_homepage import *
 
 
   
+# def show_otp_dialog(userid, window):
+#     if (userid[0]=="S"):
+#         user_type = "S"
+#     else:
+#         user_type = "I"    
+#     generated_otp = generate_otp()
+#     user_info = currentUserInfo(userid,user_type)
+#     # otp_send(generated_otp,user_info)
+#     while True:  # Keep asking for OTP until correct or user cancels
+#         otp = simpledialog.askstring("OTP Verification", f"Please enter the OTP {generated_otp} sent to your registered E-mail Id:")
+
+#         # if otp is None:
+            
+#         #     window.destroy()  # Close the main window
+#         #     return
+
+#         if verify_otp(otp, generated_otp):
+#             update_last_login(userid)
+#             window.destroy()  # Close the login window
+#             # display_hello(userid)
+#             userMainWindow = userHomePage(user_info)
+#             userMainWindow.run()
+#             return
+#         else: 
+#             messagebox.showerror("Incorrect OTP", "The entered OTP is incorrect. Please try again.")
+
 def show_otp_dialog(userid, window):
-    if (userid[0]=="S"):
+    if userid[0] == "S":
         user_type = "S"
     else:
-        user_type = "I"    
+        user_type = "I"
+
     generated_otp = generate_otp()
-    user_info = currentUserInfo(userid,user_type)
-    # otp_send(generated_otp,user_info)
-    while True:  # Keep asking for OTP until correct or user cancels
+    user_info = currentUserInfo(userid, user_type)
+    otp_send(generated_otp,user_info)
+    attempts = 0
+
+    while attempts < 3:  # Limit the maximum number of attempts to 3
         otp = simpledialog.askstring("OTP Verification", f"Please enter the OTP {generated_otp} sent to your registered E-mail Id:")
 
-        # if otp is None:
-            
-        #     window.destroy()  # Close the main window
-        #     return
+        if otp is None:
+            window.destroy()  # Close the main window
+            return
 
         if verify_otp(otp, generated_otp):
             update_last_login(userid)
             window.destroy()  # Close the login window
-            # display_hello(userid)
             userMainWindow = userHomePage(user_info)
             userMainWindow.run()
             return
-        else: 
-            messagebox.showerror("Incorrect OTP", "The entered OTP is incorrect. Please try again.")
+        else:
+            attempts += 1
+            remaining_attempts = 3 - attempts
+            messagebox.showerror("Incorrect OTP", f"The entered OTP is incorrect. You have {remaining_attempts} attempt(s) remaining. Please try again.")
+
+    # If the maximum number of attempts is reached
+    messagebox.showerror("Max Attempts Reached", "You have reached the maximum number of OTP attempts. Please try again later.")
+    window.destroy()  # Close the main window
    
         
 def submit():

@@ -35,8 +35,8 @@ def studentInsert(uid,full_name, email, dob_value, gender, contact_no, aadhaar_n
     
     
     # Insert data into the student table
-    student_query = "INSERT INTO student (uid, name, gender, dob, phone, email, aadhaar_number) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-    student_data = (uid, full_name, gender, dob_value, contact_no, email, aadhaar_no)
+    student_query = "INSERT INTO student (uid, name, gender, dob, phone, email, aadhaar_number,suspended) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+    student_data = (uid, full_name, gender, dob_value, contact_no, email, aadhaar_no, 0)
     cursor.execute(student_query, student_data)
     
    
@@ -140,3 +140,4 @@ def studentSignup():
     
     
 
+studentSignup()

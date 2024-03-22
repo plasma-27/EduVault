@@ -23,8 +23,8 @@ def instituteInsert(uid,name,tan,email,phone,password):
     dbobj = db()
     mydb,cursor = dbobj.dbconnect("credentials")
     
-    institute_query = "INSERT INTO institute (uid,name,tan,email,phone) VALUES (%s, %s, %s, %s, %s)"
-    institute_data = (uid,name,tan,email,phone)
+    institute_query = "INSERT INTO institute (uid,name,tan,email,phone,verified, suspended) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+    institute_data = (uid,name,tan,email,phone,0,0)
     cursor.execute(institute_query, institute_data)
     login_query = "INSERT INTO login (uid,`key`, hash) VALUES (%s, %s, %s)"
     login_data = (uid, "key", password)
@@ -104,3 +104,6 @@ def instituteSignup():
     b2.place(x=320,y=480)
 
     root.mainloop()
+    
+    
+# instituteSignup()

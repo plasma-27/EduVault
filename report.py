@@ -24,6 +24,7 @@ class Report:
 
         return reports_list
     
+    @staticmethod
     def submit_report(iuid, suid, message):
         try:
             dbobj = db()

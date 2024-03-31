@@ -68,6 +68,7 @@ class Document:
     
     
     
+    
     def open_file_with_default_program(self, file_content, file_type, file_name):
         """Open the file with the default program based on its type."""
         try:
@@ -75,9 +76,19 @@ class Document:
                 file.write(file_content)
 
             if os.name == 'posix':  # Check if the OS is Linux or macOS
-                subprocess.Popen(["xdg-open", file_name])  # For Linux
+                if file_type.startswith("image"):
+                    subprocess.Popen(["xdg-open", file_name])  # For Linux
+                elif file_type == "application/pdf":
+                    subprocess.Popen(["xdg-open", file_name])  # For Linux
+                else:
+                    print("Unsupported file type")
             elif os.name == 'nt':  # Check if the OS is Windows
-                subprocess.Popen(["start", file_name], shell=True)  # For Windows
+                if file_type.startswith("image"):
+                    subprocess.Popen(["start", file_name], shell=True)  # For Windows
+                elif file_type == "application/pdf":
+                    subprocess.Popen(["start", file_name], shell=True)  # For Windows
+                else:
+                    print("Unsupported file type")
 
         except Exception as e:
             print(f"Error opening file: {e}")
@@ -118,29 +129,54 @@ class Document:
     
 
 
+    # def retrieve(self, file_id):
+    #     dbobj = db()
+    #     mydb, cursor = dbobj.dbconnect("documents")
+    #     select_query = "SELECT file_name, file_data, `key` FROM files WHERE file_id = %s"
+    #     cursor.execute(select_query, (file_id,))
+    #     row = cursor.fetchone()
+    #     mydb.close()
+
+    #     if row:
+    #         filename, file_data, key = row
+    #         try:
+               
+    #             decrypted_filename, file_type = fileCrypt.decrypt(filename,file_data,key)
+    #             # Read the decrypted file data
+    #             with open(decrypted_filename, "rb") as decrypted_file:
+    #                 decrypted_file_data = decrypted_file.read()
+                
+    #             # Open the decrypted file with the default application
+    #             self.open_file_with_default_program(decrypted_file_data, file_type,filename)
+    #         except Exception as e:
+    #             print(f"Error decrypting file: {e}")
+    #     else:
+    #         print("File not found in database")
+            
     def retrieve(self, file_id):
         dbobj = db()
         mydb, cursor = dbobj.dbconnect("documents")
-        select_query = "SELECT file_name, file_data, `key` FROM files WHERE file_id = %s"
+        select_query = "SELECT file_name, file_data, file_type, `key` FROM files WHERE file_id = %s"
         cursor.execute(select_query, (file_id,))
         row = cursor.fetchone()
         mydb.close()
 
         if row:
-            filename, file_data, key = row
+            filename, file_data, file_type, key = row
             try:
-               
-                decrypted_filename, file_type = fileCrypt.decrypt(filename,file_data,key)
+                decrypted_filename = fileCrypt.decrypt(filename,file_type, file_data, key)
+                print(file_type)
                 # Read the decrypted file data
                 with open(decrypted_filename, "rb") as decrypted_file:
                     decrypted_file_data = decrypted_file.read()
-                
+
                 # Open the decrypted file with the default application
-                self.open_file_with_default_program(decrypted_file_data, file_type,filename)
+                self.open_file_with_default_program(decrypted_file_data, file_type, decrypted_filename)
             except Exception as e:
                 print(f"Error decrypting file: {e}")
         else:
             print("File not found in database")
+        
 
 
     def delete(self, file_id):
